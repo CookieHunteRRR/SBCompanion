@@ -1,31 +1,40 @@
 package com.cookiehunterrr.sbcompanion.ui.general.profile
 
-import androidx.fragment.app.viewModels
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.cookiehunterrr.sbcompanion.R
+import androidx.lifecycle.ViewModelProvider
+import com.cookiehunterrr.sbcompanion.databinding.FragmentProfileBinding
 
 class ProfileFragment : Fragment() {
 
-    companion object {
-        fun newInstance() = ProfileFragment()
-    }
-
-    private val viewModel: ProfileViewModel by viewModels()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        // TODO: Use the ViewModel
-    }
+    private var _binding: FragmentProfileBinding? = null
+    // This property is only valid between onCreateView and
+    // onDestroyView.
+    private val binding get() = _binding!!
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.fragment_profile, container, false)
+        val profileViewModel =
+            ViewModelProvider(this).get(ProfileViewModel::class.java)
+
+        _binding = FragmentProfileBinding.inflate(inflater, container, false)
+        val root: View = binding.root
+
+        /*val textView: TextView = binding.textHome
+        profileViewModel.text.observe(viewLifecycleOwner) {
+            textView.text = it
+        }*/
+        return root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

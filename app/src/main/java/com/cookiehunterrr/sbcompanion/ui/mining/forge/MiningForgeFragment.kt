@@ -1,31 +1,39 @@
 package com.cookiehunterrr.sbcompanion.ui.mining.forge
 
-import androidx.fragment.app.viewModels
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.cookiehunterrr.sbcompanion.R
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
+import com.cookiehunterrr.sbcompanion.databinding.FragmentMiningForgeBinding
 
 class MiningForgeFragment : Fragment() {
 
-    companion object {
-        fun newInstance() = MiningForgeFragment()
-    }
-
-    private val viewModel: MiningForgeViewModel by viewModels()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        // TODO: Use the ViewModel
-    }
+    private var _binding: FragmentMiningForgeBinding? = null
+    // This property is only valid between onCreateView and
+    // onDestroyView.
+    private val binding get() = _binding!!
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.fragment_mining_forge, container, false)
+        val forgeViewModel =
+            ViewModelProvider(this).get(MiningForgeViewModel::class.java)
+
+        _binding = FragmentMiningForgeBinding.inflate(inflater, container, false)
+        val root: View = binding.root
+
+        val recyclerView: RecyclerView = binding.recyclerViewForgeSlots
+
+        return root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
