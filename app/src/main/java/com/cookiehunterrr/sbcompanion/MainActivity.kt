@@ -14,12 +14,14 @@ import androidx.appcompat.app.AppCompatActivity
 import com.cookiehunterrr.sbcompanion.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
-
+    lateinit var programManager: ProgramManager
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        programManager = ProgramManager(this)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -33,12 +35,17 @@ class MainActivity : AppCompatActivity() {
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
             setOf(
+                R.id.nav_profile_selection,
                 R.id.nav_profile,
                 R.id.nav_mining_forge
             ), drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        if (programManager.currentUserUUID == "") {
+            navController.navigate(R.id.action_nav_profile_to_nav_profile_selection)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

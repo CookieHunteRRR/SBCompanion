@@ -6,7 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
+import com.cookiehunterrr.sbcompanion.MainActivity
+import com.cookiehunterrr.sbcompanion.R
 import com.cookiehunterrr.sbcompanion.databinding.FragmentProfileBinding
+import com.cookiehunterrr.sbcompanion.ui.general.profileselection.ProfileSelectionFragment
 
 class ProfileFragment : Fragment() {
 
@@ -26,7 +30,9 @@ class ProfileFragment : Fragment() {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        /*val textView: TextView = binding.textHome
+        //val textView: TextView = binding.textViewDebug
+        //(activity as MainActivity).programManager.getForgeSlotsData(textView)
+        /*
         profileViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
         }*/

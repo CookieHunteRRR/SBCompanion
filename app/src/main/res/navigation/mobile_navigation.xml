@@ -9,12 +9,25 @@
         android:id="@+id/nav_profile"
         android:name="com.cookiehunterrr.sbcompanion.ui.general.profile.ProfileFragment"
         android:label="PROFILE"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_nav_profile_to_nav_profile_selection"
+            app:destination="@id/nav_profile_selection" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_mining_forge"
         android:name="com.cookiehunterrr.sbcompanion.ui.mining.forge.MiningForgeFragment"
         android:label="MINING_FORGE"
         tools:layout="@layout/fragment_mining_forge" />
+    <fragment
+        android:id="@+id/nav_profile_selection"
+        android:name="com.cookiehunterrr.sbcompanion.ui.general.profileselection.ProfileSelectionFragment"
+        android:label="PROFILE_SELECTION"
+        tools:layout="@layout/fragment_profile_selection" >
+        <action
+            android:id="@+id/action_nav_profile_selection_to_nav_profile"
+            app:destination="@id/nav_profile" />
+    </fragment>
 
 </navigation>
