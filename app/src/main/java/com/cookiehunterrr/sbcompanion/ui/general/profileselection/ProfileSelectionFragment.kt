@@ -31,7 +31,12 @@ class ProfileSelectionFragment : Fragment() {
 
         val fetchUserBtn = binding.profileselectionBtnFetchUser
         fetchUserBtn.setOnClickListener {
-            profileSelectionViewModel.fetchUserProfiles(programManager, usernameField.text.toString())
+            profileSelectionViewModel.fetchUserMinecraftData(binding, programManager, usernameField.text.toString())
+        }
+
+        val resetUserBtn = binding.profileselectionBtnResetUser
+        resetUserBtn.setOnClickListener {
+            profileSelectionViewModel.resetSelectedUser(binding)
         }
 
         val selectProfileBtn = binding.profileselectionBtnSelectProfile

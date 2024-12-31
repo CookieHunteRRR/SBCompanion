@@ -3,10 +3,12 @@ package com.cookiehunterrr.sbcompanion
 import android.content.Context
 import android.widget.TextView
 import android.widget.Toast
+import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.cookiehunterrr.sbcompanion.database.Database
 import com.cookiehunterrr.sbcompanion.database.entities.ProfileInfo
+import com.cookiehunterrr.sbcompanion.database.entities.UserMinecraftData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +17,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
 import java.io.BufferedReader
-
 
 class ProgramManager(context: Context, database: Database) {
     val db = database
@@ -39,6 +40,25 @@ class ProgramManager(context: Context, database: Database) {
 
             val sbVersion = it.getString("version")
             Toast.makeText(appContext, sbVersion, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun fetchUserMinecraftData(username: String) {
+        val query = "https://playerdb.co/api/player/minecraft/$username"
+        getApiAnswer(query) {
+            // В случае, если API не нашел указанного юзера
+            if (!it.getBoolean("success")) {
+                Toast.makeText(appContext, "No username $username found", Toast.LENGTH_LONG).show()
+                return@getApiAnswer
+            }
+            // Если указанный юзер найден
+            val data = it.getJSONObject("data").getJSONObject("player")
+            val newUser = UserMinecraftData(
+                data.getString("username"),
+                data.getString("id"),
+                data.getString("avatar")
+            )
+            db.userMinecraftDataDao().insert(newUser)
         }
     }
 

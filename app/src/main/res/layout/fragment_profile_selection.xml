@@ -15,7 +15,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/avatar_placeholder"
         tools:src="@tools:sample/avatars" />
+
+    <Button
+        android:id="@+id/profileselection_btn_reset_user"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Reset user"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/profileselection_avatar"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/profileselection_editText_username"
