@@ -11,17 +11,25 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.room.Room
+import com.cookiehunterrr.sbcompanion.database.Database
 import com.cookiehunterrr.sbcompanion.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     lateinit var programManager: ProgramManager
+    lateinit var db: Database
+
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        programManager = ProgramManager(this)
+        db = Room.databaseBuilder(
+            applicationContext,
+            Database::class.java, "database.db"
+        ).allowMainThreadQueries().build()
+        programManager = ProgramManager(this, db)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)

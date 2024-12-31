@@ -5,12 +5,22 @@ import android.widget.TextView
 import android.widget.Toast
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
+import com.cookiehunterrr.sbcompanion.database.Database
+import com.cookiehunterrr.sbcompanion.database.entities.ProfileInfo
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
 import java.io.BufferedReader
 
 
-class ProgramManager(context: Context) {
+class ProgramManager(context: Context, database: Database) {
+    val db = database
     val appContext = context
+
     var currentUserUUID: String = ""
     lateinit var debugTextView: TextView
 
@@ -32,17 +42,46 @@ class ProgramManager(context: Context) {
         }
     }
 
-    private fun getProfiles() {
+    fun updateProfilesForUser(username: String) {
         // Update cached data for all profiles with one api call
         val key = getApiKey()
+        val userUUID = findUserUUIDByUsername(username)
         val request = "https://api.hypixel.net/v2/resources/skyblock/profiles?key=$key&uuid=$currentUserUUID"
 
         getApiAnswer(request) {
             val profileArray = it.getJSONArray("profiles")
             for (profileIndex: Int in 0..profileArray.length()) {
-
+                saveProfileDataInDB(profileArray.getJSONObject(profileIndex), userUUID)
             }
         }
+    }
+
+    private fun findUserUUIDByUsername(username: String) : String {
+        val query = "https://playerdb.co/api/player/minecraft/$username"
+        var userUUID: String = ""
+        val job = CoroutineScope(Dispatchers.Default).launch {  }
+        val deferredResult: Deferred<String> = CoroutineScope(Dispatchers.Default).async {
+            var result: String = ""
+            getApiAnswer(query) {
+                result = it.getJSONObject("data").getJSONObject("player").getString("id")
+            }
+            return@async result
+        }
+        runBlocking {
+            userUUID = deferredResult.await()
+        }
+        // TODO: строка возвращается до того, как получается ответ от API, поэтому возвращается пустая строка
+        return userUUID
+    }
+
+    private fun saveProfileDataInDB(profileObject: JSONObject, userUUID: String) {
+        val profileInfo = ProfileInfo(
+            profileObject.getString("profile_id"),
+            userUUID,
+            profileObject.getString("cute_name"),
+            profileObject.getString("game_mode")
+        )
+        db.profileInfoDao().insert(profileInfo)
     }
 
     private fun getApiAnswer(apiRequest: String, callback: (result: JSONObject) -> Unit) {

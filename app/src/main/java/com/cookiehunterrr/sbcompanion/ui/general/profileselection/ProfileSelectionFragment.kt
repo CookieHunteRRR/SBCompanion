@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
+import com.cookiehunterrr.sbcompanion.MainActivity
 import com.cookiehunterrr.sbcompanion.databinding.FragmentProfileSelectionBinding
 
 class ProfileSelectionFragment : Fragment() {
@@ -24,6 +25,18 @@ class ProfileSelectionFragment : Fragment() {
 
         _binding = FragmentProfileSelectionBinding.inflate(inflater, container, false)
         val root: View = binding.root
+        val programManager = (activity as MainActivity).programManager
+
+        val usernameField = binding.profileselectionEditTextUsername
+
+        val fetchUserBtn = binding.profileselectionBtnFetchUser
+        fetchUserBtn.setOnClickListener {
+            profileSelectionViewModel.fetchUserProfiles(programManager, usernameField.text.toString())
+        }
+
+        val selectProfileBtn = binding.profileselectionBtnSelectProfile
+
+        val profileSelectionSpinner = binding.profileselectionSpinnerPlayerProfiles
 
         return root
     }

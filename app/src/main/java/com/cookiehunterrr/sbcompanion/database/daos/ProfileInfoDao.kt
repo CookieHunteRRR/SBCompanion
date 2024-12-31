@@ -12,7 +12,7 @@ interface ProfileInfoDao {
     fun getPlayerProfiles(playerUUID: String) : List<ProfileInfo>
 
     @Insert
-    fun insertAll(vararg users: ProfileInfo)
+    fun insert(vararg users: ProfileInfo)
 
     @Delete
     fun delete(user: ProfileInfo)
