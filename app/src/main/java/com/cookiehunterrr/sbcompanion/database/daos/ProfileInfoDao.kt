@@ -11,6 +11,9 @@ interface ProfileInfoDao {
     @Query("SELECT * FROM profileInfos WHERE playerUUID LIKE :playerUUID")
     fun getPlayerProfiles(playerUUID: String) : List<ProfileInfo>
 
+    @Query("SELECT * FROM profileInfos WHERE playerUUID LIKE :playerUUID AND profileName LIKE :profileName LIMIT 1")
+    fun getPlayerProfileByName(playerUUID: String, profileName: String) : ProfileInfo?
+
     @Insert
     fun insert(vararg users: ProfileInfo)
 

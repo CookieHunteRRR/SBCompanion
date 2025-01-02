@@ -1,25 +1,37 @@
 package com.cookiehunterrr.sbcompanion.ui.general.profileselection
 
+import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bumptech.glide.Glide
 import com.cookiehunterrr.sbcompanion.ProgramManager
 import com.cookiehunterrr.sbcompanion.R
+import com.cookiehunterrr.sbcompanion.database.entities.ProfileInfo
 import com.cookiehunterrr.sbcompanion.database.entities.UserMinecraftData
 import com.cookiehunterrr.sbcompanion.databinding.FragmentProfileSelectionBinding
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class ProfileSelectionViewModel : ViewModel() {
-    val selectedPlayerProfileUUIDs: List<String> = arrayListOf()
+    val selectedPlayerProfileNames : MutableList<String> = mutableListOf()
+    private var currentlySelectedUserUUID: String = ""
+    private var currentlySelectedProfileName: String = ""
 
-    fun fetchUserProfiles(manager: ProgramManager, userUUID: String) {
+    fun fetchUserProfiles(binding: FragmentProfileSelectionBinding, manager: ProgramManager, userUUID: String) {
         // Ищем профили игрока в локальной бд
         val localProfileData = manager.db.profileInfoDao().getPlayerProfiles(userUUID)
         if (localProfileData.isEmpty()) {
             // Получаем профили игрока через API хайпикселя
-            manager
+            manager.fetchUserSkyblockProfiles(userUUID)
+            viewModelScope.launch {
+                delay(500)
+                val localProfileDataAgain = manager.db.profileInfoDao().getPlayerProfiles(userUUID)
+                setSkyblockProfilesForUser(binding, localProfileDataAgain)
+            }
+            return
         }
+        setSkyblockProfilesForUser(binding, localProfileData)
     }
 
     fun fetchUserMinecraftData(binding: FragmentProfileSelectionBinding,
@@ -52,9 +64,26 @@ class ProfileSelectionViewModel : ViewModel() {
         binding.profileselectionBtnResetUser.isEnabled = false
         binding.profileselectionBtnSelectProfile.isEnabled = false
         // Очищаем дропдаун с профилями
-        binding.profileselectionSpinnerPlayerProfiles.adapter = null
+        selectedPlayerProfileNames.clear()
+        currentlySelectedUserUUID = ""
+        currentlySelectedProfileName = ""
 
         Glide.with(binding.root).load(R.drawable.avatar_placeholder).into(binding.profileselectionAvatar)
+    }
+
+    fun onSkyblockProfileSelected(indexInProfileList: Int) {
+        if (indexInProfileList < 0) return
+        currentlySelectedProfileName = selectedPlayerProfileNames[indexInProfileList]
+    }
+
+    fun updateSelectedUserSkyblockProfile(manager: ProgramManager) {
+        val selectedProfile = manager.db.profileInfoDao().getPlayerProfileByName(
+            currentlySelectedUserUUID, currentlySelectedProfileName)
+        if (selectedProfile != null) {
+            manager.currentProfileUUID = selectedProfile.profileUUID
+            Toast.makeText(manager.appContext,
+                "Selected ${selectedProfile.profileName} profile", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun updateSelectedUser(binding: FragmentProfileSelectionBinding,
@@ -67,8 +96,18 @@ class ProfileSelectionViewModel : ViewModel() {
         binding.profileselectionBtnResetUser.isEnabled = true
         binding.profileselectionBtnSelectProfile.isEnabled = true
         // Устанавливаем данные пользователя на экране
+        currentlySelectedUserUUID = userData.userUUID
         Glide.with(binding.root).load(userData.userAvatarLink).into(binding.profileselectionAvatar)
         binding.profileselectionEditTextUsername.setText(userData.username)
-        fetchUserProfiles(manager, userData.userUUID)
+        fetchUserProfiles(binding, manager, userData.userUUID)
+
+    }
+
+    private fun setSkyblockProfilesForUser(binding: FragmentProfileSelectionBinding, profileInfos: List<ProfileInfo>) {
+        selectedPlayerProfileNames.clear()
+        for (profileInfo in profileInfos) {
+            selectedPlayerProfileNames.add(profileInfo.profileName)
+        }
+        (binding.profileselectionSpinnerPlayerProfiles.adapter as ArrayAdapter<String>).notifyDataSetChanged()
     }
 }

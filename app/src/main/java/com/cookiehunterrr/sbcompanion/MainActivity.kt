@@ -2,7 +2,6 @@ package com.cookiehunterrr.sbcompanion
 
 import android.os.Bundle
 import android.view.Menu
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -51,7 +50,7 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
-        if (programManager.currentUserUUID == "") {
+        if (programManager.currentProfileUUID == "") {
             navController.navigate(R.id.action_nav_profile_to_nav_profile_selection)
         }
     }
