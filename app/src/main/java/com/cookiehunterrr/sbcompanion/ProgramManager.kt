@@ -23,10 +23,8 @@ class ProgramManager(context: Context, database: Database) {
     val appContext = context
 
     var currentUserUUID: String = ""
-    lateinit var debugTextView: TextView
 
-    fun getForgeSlotsData(textView: TextView) {
-        debugTextView = textView
+    fun getForgeSlotsData() {
 
         val key = getApiKey()
         val request = "https://api.hypixel.net/v2/resources/skyblock/profiles?key=$key&uuid=$currentUserUUID"
@@ -62,11 +60,11 @@ class ProgramManager(context: Context, database: Database) {
         }
     }
 
-    fun updateProfilesForUser(username: String) {
+    fun fetchUserSkyblockProfiles(userUUID: String) {
         // Update cached data for all profiles with one api call
         val key = getApiKey()
-        val userUUID = findUserUUIDByUsername(username)
-        val request = "https://api.hypixel.net/v2/resources/skyblock/profiles?key=$key&uuid=$currentUserUUID"
+        //val userUUID = findUserUUIDByUsername(username)
+        val request = "https://api.hypixel.net/v2/resources/skyblock/profiles?key=$key&uuid=$userUUID"
 
         getApiAnswer(request) {
             val profileArray = it.getJSONArray("profiles")
@@ -74,24 +72,6 @@ class ProgramManager(context: Context, database: Database) {
                 saveProfileDataInDB(profileArray.getJSONObject(profileIndex), userUUID)
             }
         }
-    }
-
-    private fun findUserUUIDByUsername(username: String) : String {
-        val query = "https://playerdb.co/api/player/minecraft/$username"
-        var userUUID: String = ""
-        val job = CoroutineScope(Dispatchers.Default).launch {  }
-        val deferredResult: Deferred<String> = CoroutineScope(Dispatchers.Default).async {
-            var result: String = ""
-            getApiAnswer(query) {
-                result = it.getJSONObject("data").getJSONObject("player").getString("id")
-            }
-            return@async result
-        }
-        runBlocking {
-            userUUID = deferredResult.await()
-        }
-        // TODO: строка возвращается до того, как получается ответ от API, поэтому возвращается пустая строка
-        return userUUID
     }
 
     private fun saveProfileDataInDB(profileObject: JSONObject, userUUID: String) {

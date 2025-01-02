@@ -11,10 +11,16 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class ProfileSelectionViewModel : ViewModel() {
-    var currentSelectedPlayerUUID: String = ""
     val selectedPlayerProfileUUIDs: List<String> = arrayListOf()
 
-    fun fetchUserProfiles(manager: ProgramManager, userUUID: String) {}
+    fun fetchUserProfiles(manager: ProgramManager, userUUID: String) {
+        // Ищем профили игрока в локальной бд
+        val localProfileData = manager.db.profileInfoDao().getPlayerProfiles(userUUID)
+        if (localProfileData.isEmpty()) {
+            // Получаем профили игрока через API хайпикселя
+            manager
+        }
+    }
 
     fun fetchUserMinecraftData(binding: FragmentProfileSelectionBinding,
                                manager: ProgramManager, username: String) {
@@ -44,6 +50,7 @@ class ProfileSelectionViewModel : ViewModel() {
         binding.profileselectionEditTextUsername.isEnabled = true
         // Убираем возможность сбросить выбранного пользователя
         binding.profileselectionBtnResetUser.isEnabled = false
+        binding.profileselectionBtnSelectProfile.isEnabled = false
         // Очищаем дропдаун с профилями
         binding.profileselectionSpinnerPlayerProfiles.adapter = null
 
@@ -58,6 +65,7 @@ class ProfileSelectionViewModel : ViewModel() {
         // Даем возможность сбросить выбранного пользователя
         // Скорее всего, если нажать до завершения остального кода, то нормально не сбросится
         binding.profileselectionBtnResetUser.isEnabled = true
+        binding.profileselectionBtnSelectProfile.isEnabled = true
         // Устанавливаем данные пользователя на экране
         Glide.with(binding.root).load(userData.userAvatarLink).into(binding.profileselectionAvatar)
         binding.profileselectionEditTextUsername.setText(userData.username)
