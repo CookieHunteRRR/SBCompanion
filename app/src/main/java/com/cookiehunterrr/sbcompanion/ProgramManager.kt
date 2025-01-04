@@ -5,15 +5,20 @@ import android.widget.Toast
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.cookiehunterrr.sbcompanion.database.Database
+import com.cookiehunterrr.sbcompanion.database.entities.ForgeSlot
 import com.cookiehunterrr.sbcompanion.database.entities.ProfileInfo
 import com.cookiehunterrr.sbcompanion.database.entities.UserMinecraftData
+import com.cookiehunterrr.sbcompanion.extra.data.ForgeTimes
 import com.cookiehunterrr.sbcompanion.extra.enums.ProfileType
+import com.cookiehunterrr.sbcompanion.managers.ForgeManager
 import org.json.JSONObject
 import java.io.BufferedReader
 
 class ProgramManager(context: Context, database: Database) {
     val db = database
     val appContext = context
+
+    val forgeManager = ForgeManager()
 
     private var apiKey = ""
     private var currentProfileUUID: String = ""
@@ -55,6 +60,13 @@ class ProgramManager(context: Context, database: Database) {
         }
     }
 
+    fun getProfileForgeSlots() : List<ForgeSlot> {
+        val a = db.forgeSlotDao().getProfileForgeSlots(currentProfileUUID)
+        // TODO: Добавить фетчинг актуальных данных если прошло 5 минут с последнего апдейта или какой-то фордж слот закончился готовиться
+        return a
+    }
+
+
     fun onActivityCreated() {
         if (currentProfileUUID == "") {
             (appContext as MainActivity).moveToProfileSelection()
@@ -62,17 +74,24 @@ class ProgramManager(context: Context, database: Database) {
     }
 
     private fun updateForgeSlotsDataFromProfileJSON(profileJsonObject: JSONObject, userUUID: String) {
-        if (!profileJsonObject.getJSONObject("members").has(userUUID)) return
+        val correctUserUUID = getAppropriateUserUUID(userUUID)
+        if (!profileJsonObject.getJSONObject("members").has(correctUserUUID)) return
 
         val forgeData = profileJsonObject.getJSONObject("members").
-        getJSONObject(getAppropriateUserUUID(userUUID)).getJSONObject("forge").
+        getJSONObject(correctUserUUID).getJSONObject("forge").
         getJSONObject("forge_processes").getJSONObject("forge_1")
 
         for (slotIndex in 1..7) {
             if (forgeData.has("$slotIndex")) {
-                val forgeSlot = forgeData.getJSONObject("$slotIndex")
-                val itemID = forgeSlot.getString("id")
-                val startTime = forgeSlot.getLong("startTime")
+                val forgeSlotJsonObject = forgeData.getJSONObject("$slotIndex")
+
+                val forgeSlot = ForgeSlot(
+                    profileJsonObject.getString("profile_id"),
+                    slotIndex,
+                    forgeSlotJsonObject.getString("id"),
+                    forgeSlotJsonObject.getLong("startTime")
+                )
+                db.forgeSlotDao().insert(forgeSlot)
             }
         }
     }

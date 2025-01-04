@@ -6,7 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.cookiehunterrr.sbcompanion.MainActivity
 import com.cookiehunterrr.sbcompanion.databinding.FragmentMiningForgeBinding
 
 class MiningForgeFragment : Fragment() {
@@ -27,7 +29,11 @@ class MiningForgeFragment : Fragment() {
         _binding = FragmentMiningForgeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
+        val mainActivity = this.requireContext() as MainActivity
+        val forgeAdapter = ForgeAdapter(mainActivity.programManager, mainActivity)
         val recyclerView: RecyclerView = binding.recyclerViewForgeSlots
+        recyclerView.adapter = forgeAdapter
+        recyclerView.layoutManager = LinearLayoutManager(mainActivity)
 
         return root
     }
