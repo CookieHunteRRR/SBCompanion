@@ -1,7 +1,6 @@
 package com.cookiehunterrr.sbcompanion.ui.general.profileselection
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -9,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.cookiehunterrr.sbcompanion.MainActivity
 import com.cookiehunterrr.sbcompanion.databinding.FragmentProfileSelectionBinding
@@ -69,12 +67,4 @@ class ProfileSelectionFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-
-    /*override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-        Toast.makeText(this.requireContext(), "AUU", Toast.LENGTH_SHORT).show()
-    }
-
-    override fun onNothingSelected(p0: AdapterView<*>?) {
-        Toast.makeText(this.requireContext(), "NUH UH", Toast.LENGTH_SHORT).show()
-    }*/
 }

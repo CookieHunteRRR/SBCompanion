@@ -3,6 +3,7 @@ package com.cookiehunterrr.sbcompanion.database.daos
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.cookiehunterrr.sbcompanion.database.entities.ProfileInfo
 
@@ -14,7 +15,7 @@ interface ProfileInfoDao {
     @Query("SELECT * FROM profileInfos WHERE playerUUID LIKE :playerUUID AND profileName LIKE :profileName LIMIT 1")
     fun getPlayerProfileByName(playerUUID: String, profileName: String) : ProfileInfo?
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(vararg users: ProfileInfo)
 
     @Delete

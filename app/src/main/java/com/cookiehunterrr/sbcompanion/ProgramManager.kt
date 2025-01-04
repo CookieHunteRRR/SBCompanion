@@ -15,23 +15,11 @@ class ProgramManager(context: Context, database: Database) {
     val db = database
     val appContext = context
 
-    var currentProfileUUID: String = ""
+    private var apiKey = ""
+    private var currentProfileUUID: String = ""
 
-    fun getForgeSlotsData() {
-
-        val key = getApiKey()
-        val request = "https://api.hypixel.net/v2/resources/skyblock/profile?key=$key&profile=$currentProfileUUID"
-
-        getApiAnswer(request) {
-            val isSuccessful = it.getBoolean("success")
-            if (!isSuccessful) {
-                val errorCause = it.getString("cause")
-                Toast.makeText(appContext, errorCause, Toast.LENGTH_SHORT).show()
-            }
-
-            val sbVersion = it.getString("version")
-            Toast.makeText(appContext, sbVersion, Toast.LENGTH_SHORT).show()
-        }
+    fun setCurrentUserData(profileUUID: String) {
+        currentProfileUUID = profileUUID
     }
 
     fun fetchUserMinecraftData(username: String) {
@@ -67,14 +55,39 @@ class ProgramManager(context: Context, database: Database) {
         }
     }
 
-    private fun saveProfileDataInDB(profileObject: JSONObject, userUUID: String) {
+    fun onActivityCreated() {
+        if (currentProfileUUID == "") {
+            (appContext as MainActivity).moveToProfileSelection()
+        }
+    }
+
+    private fun updateForgeSlotsDataFromProfileJSON(profileJsonObject: JSONObject, userUUID: String) {
+        if (!profileJsonObject.getJSONObject("members").has(userUUID)) return
+
+        val forgeData = profileJsonObject.getJSONObject("members").
+        getJSONObject(getAppropriateUserUUID(userUUID)).getJSONObject("forge").
+        getJSONObject("forge_processes").getJSONObject("forge_1")
+
+        for (slotIndex in 1..7) {
+            if (forgeData.has("$slotIndex")) {
+                val forgeSlot = forgeData.getJSONObject("$slotIndex")
+                val itemID = forgeSlot.getString("id")
+                val startTime = forgeSlot.getLong("startTime")
+            }
+        }
+    }
+
+    private fun saveProfileDataInDB(profileJsonObject: JSONObject, userUUID: String) {
         val profileInfo = ProfileInfo(
-            profileObject.getString("profile_id"),
+            profileJsonObject.getString("profile_id"),
             userUUID,
-            profileObject.getString("cute_name"),
-            getProfileType(profileObject)
+            profileJsonObject.getString("cute_name"),
+            getProfileType(profileJsonObject),
+            java.util.Date().time
         )
         db.profileInfoDao().insert(profileInfo)
+
+        updateForgeSlotsDataFromProfileJSON(profileJsonObject, userUUID)
     }
 
     private fun getApiAnswer(apiRequest: String, callback: (result: JSONObject) -> Unit) {
@@ -89,12 +102,13 @@ class ProgramManager(context: Context, database: Database) {
     }
 
     private fun getApiKey() : String {
+        if (apiKey != "") return apiKey
+
         val inputStream = appContext.assets.open("key.txt")
         val reader = BufferedReader(inputStream.reader())
-        val firstLine = reader.readLine()
+        apiKey = reader.readLine() ?: ""
         reader.close()
-        if (firstLine != null) return firstLine
-        return ""
+        return apiKey
     }
 
     private fun getProfileType(jsonObject: JSONObject) : String {
@@ -108,5 +122,9 @@ class ProgramManager(context: Context, database: Database) {
             "stranded" -> ProfileType.STRANDED.toString()
             else -> ""
         }
+    }
+
+    private fun getAppropriateUserUUID(originalUUID: String) : String {
+        return originalUUID.replace("-", "")
     }
 }
