@@ -1,5 +1,8 @@
 package com.cookiehunterrr.sbcompanion.managers
 
+import com.cookiehunterrr.sbcompanion.database.entities.ForgeSlot
+import com.cookiehunterrr.sbcompanion.database.entities.ProfileInfo
+
 class ForgeManager {
     private val forgeTimesInSeconds = mapOf(
         "PERFECT_RUBY_GEM" to 72000L,
@@ -17,16 +20,36 @@ class ForgeManager {
     )
 
     fun getRemainingForgeTimeAsString(itemId: String, startTime: Long) : String {
-        val currentTime = java.util.Date().time
         if (!forgeTimesInSeconds.containsKey(itemId)) {
             return "UNKNOWN ITEM"
         }
-        val requiredTime = forgeTimesInSeconds[itemId]!! * 1000
-        val timeLeft = (startTime + requiredTime) - currentTime
+        val timeLeft = getRemainingForgeTime(itemId, startTime)
         if (timeLeft < 1) {
             return "ENDED"
         }
         return convertToBeautifulTimeString(timeLeft)
+    }
+
+    fun isForgeSlotsRequireUpdate(forgeSlots: List<ForgeSlot>, profileInfo: ProfileInfo) : Boolean {
+        val currentTime = java.util.Date().time
+        val lastProfileUpdate = profileInfo.lastUpdate
+        if (currentTime - lastProfileUpdate > 300 * 1000) {
+            return true
+        }
+        for (slotIndex in forgeSlots.indices) {
+            val forgeSlot = forgeSlots.get(slotIndex)
+            if (getRemainingForgeTime(forgeSlot.itemID, forgeSlot.startTime) < 1) {
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun getRemainingForgeTime(itemId: String, startTime: Long) : Long {
+        val currentTime = java.util.Date().time
+        val requiredTime = forgeTimesInSeconds[itemId]!! * 1000
+        val timeLeft = (startTime + requiredTime) - currentTime
+        return timeLeft
     }
 
     private fun convertToBeautifulTimeString(time: Long) : String {

@@ -80,7 +80,7 @@ class ProfileSelectionViewModel : ViewModel() {
         val selectedProfile = manager.db.profileInfoDao().getPlayerProfileByName(
             currentlySelectedUserUUID, currentlySelectedProfileName)
         if (selectedProfile != null) {
-            manager.setCurrentUserData(selectedProfile.profileUUID)
+            manager.setCurrentUserData(currentlySelectedUserUUID, selectedProfile.profileUUID)
             Toast.makeText(manager.appContext,
                 "Selected ${selectedProfile.profileName} profile", Toast.LENGTH_SHORT).show()
         }

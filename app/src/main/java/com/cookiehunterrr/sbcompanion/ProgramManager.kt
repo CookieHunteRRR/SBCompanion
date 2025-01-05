@@ -20,11 +20,15 @@ class ProgramManager(context: Context, database: Database) {
     val forgeManager = ForgeManager()
 
     private var apiKey = ""
+    private var currentUserUUID: String = ""
     private var currentProfileUUID: String = ""
 
-    fun setCurrentUserData(profileUUID: String) {
+    fun setCurrentUserData(userUUID: String, profileUUID: String) {
+        currentUserUUID = userUUID
         currentProfileUUID = profileUUID
     }
+
+    fun isCurrentUserSet() : Boolean { return currentUserUUID != "" && currentProfileUUID != "" }
 
     fun fetchUserMinecraftData(username: String) {
         val query = "https://playerdb.co/api/player/minecraft/$username"
@@ -45,24 +49,42 @@ class ProgramManager(context: Context, database: Database) {
         }
     }
 
-    fun fetchUserSkyblockProfiles(userUUID: String) {
+    fun fetchUserSkyblockProfiles(userUUID: String = "") {
+        val usedUserUUID = if (userUUID == "") { currentUserUUID } else { userUUID }
+
         // Update cached data for all profiles with one api call
         val key = getApiKey()
-        //val userUUID = findUserUUIDByUsername(username)
-        val request = "https://api.hypixel.net/v2/skyblock/profiles?key=$key&uuid=$userUUID"
+        val request = "https://api.hypixel.net/v2/skyblock/profiles?key=$key&uuid=$usedUserUUID"
 
         getApiAnswer(request) {
             val profileArray = it.getJSONArray("profiles")
-            for (profileIndex: Int in 0..<profileArray.length()) {
-                saveProfileDataInDB(profileArray.getJSONObject(profileIndex), userUUID)
+            val profileAmount = profileArray.length()
+            for (profileIndex: Int in 0..<profileAmount) {
+                saveProfileDataInDB(profileArray.getJSONObject(profileIndex), usedUserUUID)
             }
+            Toast.makeText(appContext, "Fetched $profileAmount profiles", Toast.LENGTH_SHORT).show()
         }
     }
 
+    fun getCurrentUserDataFromDB() : Pair<UserMinecraftData, ProfileInfo>? {
+        if (currentUserUUID == "" || currentProfileUUID == "") return null
+
+        val profile = db.profileInfoDao().getPlayerProfileByUUID(currentUserUUID, currentProfileUUID)
+        val userData = db.userMinecraftDataDao().getUserMinecraftDataByUUID(currentUserUUID)
+        return Pair(userData!!, profile!!)
+    }
+
     fun getProfileForgeSlots() : List<ForgeSlot> {
-        val a = db.forgeSlotDao().getProfileForgeSlots(currentProfileUUID)
-        // TODO: Добавить фетчинг актуальных данных если прошло 5 минут с последнего апдейта или какой-то фордж слот закончился готовиться
-        return a
+        val currentForgeSlots = db.forgeSlotDao().getProfileForgeSlots(currentProfileUUID)
+        val currentUserData = db.profileInfoDao().getPlayerProfileByUUID(currentUserUUID, currentProfileUUID)
+
+        if (forgeManager.isForgeSlotsRequireUpdate(currentForgeSlots, currentUserData!!)) {
+            fetchUserSkyblockProfiles()
+            // TODO: оно не вернет актуальные данные...
+            return db.forgeSlotDao().getProfileForgeSlots(currentProfileUUID)
+        }
+
+        return currentForgeSlots
     }
 
 
@@ -91,6 +113,9 @@ class ProgramManager(context: Context, database: Database) {
                     forgeSlotJsonObject.getLong("startTime")
                 )
                 db.forgeSlotDao().insert(forgeSlot)
+            }
+            else {
+                db.forgeSlotDao().deleteForgeSlotOfProfile(currentProfileUUID, slotIndex)
             }
         }
     }

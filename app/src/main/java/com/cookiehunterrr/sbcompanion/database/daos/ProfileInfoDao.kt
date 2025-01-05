@@ -15,6 +15,9 @@ interface ProfileInfoDao {
     @Query("SELECT * FROM profileInfos WHERE playerUUID LIKE :playerUUID AND profileName LIKE :profileName LIMIT 1")
     fun getPlayerProfileByName(playerUUID: String, profileName: String) : ProfileInfo?
 
+    @Query("SELECT * FROM profileInfos WHERE playerUUID LIKE :playerUUID AND profileUUID LIKE :profileUUID LIMIT 1")
+    fun getPlayerProfileByUUID(playerUUID: String, profileUUID: String) : ProfileInfo?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(vararg users: ProfileInfo)
 

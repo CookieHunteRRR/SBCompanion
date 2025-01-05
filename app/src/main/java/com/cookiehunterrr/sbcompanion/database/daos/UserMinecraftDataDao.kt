@@ -11,6 +11,9 @@ interface UserMinecraftDataDao {
     @Query("SELECT * FROM userMinecraftData WHERE username LIKE :username LIMIT 1")
     fun getUserMinecraftData(username: String) : UserMinecraftData?
 
+    @Query("SELECT * FROM userMinecraftData WHERE userUUID LIKE :userUUID LIMIT 1")
+    fun getUserMinecraftDataByUUID(userUUID: String) : UserMinecraftData?
+
     @Insert
     fun insert(vararg users: UserMinecraftData)
 

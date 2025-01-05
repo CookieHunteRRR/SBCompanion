@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
+import com.cookiehunterrr.sbcompanion.MainActivity
 import com.cookiehunterrr.sbcompanion.databinding.FragmentProfileBinding
 
 class ProfileFragment : Fragment() {
@@ -26,12 +27,25 @@ class ProfileFragment : Fragment() {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        //val textView: TextView = binding.textViewDebug
-        //(activity as MainActivity).programManager.getForgeSlotsData(textView)
-        /*
-        profileViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }*/
+        val mainActivity = (activity as MainActivity)
+        val manager = mainActivity.programManager
+        if (!manager.isCurrentUserSet()) {
+            mainActivity.moveToProfileSelection()
+            return root
+        }
+
+        profileViewModel.setViewCurrentUserData(manager, binding)
+
+        val forceUpdateBtn = binding.profileBtnForceupdate
+        forceUpdateBtn.setOnClickListener {
+            profileViewModel.forceUpdateProfile(manager)
+        }
+
+        val resetProfileBtn = binding.profileBtnResetprofile
+        resetProfileBtn.setOnClickListener {
+            profileViewModel.resetCurrentProfile(manager)
+        }
+
         return root
     }
 

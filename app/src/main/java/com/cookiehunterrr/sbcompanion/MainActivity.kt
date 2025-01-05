@@ -52,11 +52,15 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
-        programManager.onActivityCreated()
+        //programManager.onActivityCreated()
     }
 
     fun moveToProfileSelection() {
         navController.navigate(R.id.action_nav_profile_to_nav_profile_selection)
+    }
+
+    fun moveToProfile() {
+        navController.navigate(R.id.action_nav_profile_selection_to_nav_profile)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

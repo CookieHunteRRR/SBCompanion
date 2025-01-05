@@ -29,6 +29,11 @@ class ProfileSelectionFragment : Fragment() {
         _binding = FragmentProfileSelectionBinding.inflate(inflater, container, false)
         val root: View = binding.root
         val programManager = (activity as MainActivity).programManager
+        if (programManager.isCurrentUserSet()) {
+            (activity as MainActivity).moveToProfile()
+            return root
+        }
+
 
         val usernameField = binding.profileselectionEditTextUsername
 
