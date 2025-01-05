@@ -18,6 +18,9 @@ class ForgeManager {
 
     fun getRemainingForgeTimeAsString(itemId: String, startTime: Long) : String {
         val currentTime = java.util.Date().time
+        if (!forgeTimesInSeconds.containsKey(itemId)) {
+            return "UNKNOWN ITEM"
+        }
         val requiredTime = forgeTimesInSeconds[itemId]!! * 1000
         val timeLeft = (startTime + requiredTime) - currentTime
         if (timeLeft < 1) {

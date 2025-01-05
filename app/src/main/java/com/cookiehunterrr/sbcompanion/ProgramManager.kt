@@ -8,7 +8,6 @@ import com.cookiehunterrr.sbcompanion.database.Database
 import com.cookiehunterrr.sbcompanion.database.entities.ForgeSlot
 import com.cookiehunterrr.sbcompanion.database.entities.ProfileInfo
 import com.cookiehunterrr.sbcompanion.database.entities.UserMinecraftData
-import com.cookiehunterrr.sbcompanion.extra.data.ForgeTimes
 import com.cookiehunterrr.sbcompanion.extra.enums.ProfileType
 import com.cookiehunterrr.sbcompanion.managers.ForgeManager
 import org.json.JSONObject
