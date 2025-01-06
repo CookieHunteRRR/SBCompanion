@@ -24,11 +24,18 @@ class ProgramManager(context: Context, database: Database) {
     private var currentProfileUUID: String = ""
 
     fun setCurrentUserData(userUUID: String, profileUUID: String) {
+        if (currentProfileUUID != "") {
+            db.profileInfoDao().setIsProfileCurrentlySelected(currentProfileUUID, false)
+        }
+        if (profileUUID != "") {
+            db.profileInfoDao().setIsProfileCurrentlySelected(profileUUID, true)
+        }
         currentUserUUID = userUUID
         currentProfileUUID = profileUUID
     }
 
     fun isCurrentUserSet() : Boolean { return currentUserUUID != "" && currentProfileUUID != "" }
+    fun isCurrentUserHasProfileUUID(checkedProfileUUID: String) : Boolean { return checkedProfileUUID == currentProfileUUID }
 
     fun fetchUserMinecraftData(username: String) {
         val query = "https://playerdb.co/api/player/minecraft/$username"
@@ -121,12 +128,15 @@ class ProgramManager(context: Context, database: Database) {
     }
 
     private fun saveProfileDataInDB(profileJsonObject: JSONObject, userUUID: String) {
+        val profileUUID = profileJsonObject.getString("profile_id")
+        val isProfileCurrentlySelected = profileUUID == currentProfileUUID
         val profileInfo = ProfileInfo(
             profileJsonObject.getString("profile_id"),
             userUUID,
             profileJsonObject.getString("cute_name"),
             getProfileType(profileJsonObject),
-            java.util.Date().time
+            java.util.Date().time,
+            isProfileCurrentlySelected
         )
         db.profileInfoDao().insert(profileInfo)
 

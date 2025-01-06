@@ -53,6 +53,11 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
 
         //programManager.onActivityCreated()
+        val currentProfile = db.profileInfoDao().getCurrentlySelectedProfile()
+        if (currentProfile != null) {
+            programManager.setCurrentUserData(currentProfile.playerUUID, currentProfile.profileUUID)
+            moveToProfile()
+        }
     }
 
     fun moveToProfileSelection() {

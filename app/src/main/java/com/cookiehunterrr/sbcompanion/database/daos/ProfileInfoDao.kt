@@ -18,6 +18,12 @@ interface ProfileInfoDao {
     @Query("SELECT * FROM profileInfos WHERE playerUUID LIKE :playerUUID AND profileUUID LIKE :profileUUID LIMIT 1")
     fun getPlayerProfileByUUID(playerUUID: String, profileUUID: String) : ProfileInfo?
 
+    @Query("UPDATE profileInfos SET isCurrentlySelected = :isSelected WHERE profileUUID LIKE :profileUUID")
+    fun setIsProfileCurrentlySelected(profileUUID: String, isSelected: Boolean)
+
+    @Query("SELECT * FROM profileInfos WHERE isCurrentlySelected LIKE 1 LIMIT 1")
+    fun getCurrentlySelectedProfile() : ProfileInfo?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(vararg users: ProfileInfo)
 

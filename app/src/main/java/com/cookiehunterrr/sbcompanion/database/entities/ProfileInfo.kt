@@ -10,5 +10,6 @@ data class ProfileInfo(
     @ColumnInfo(name="playerUUID") val playerUUID: String,
     @ColumnInfo(name = "profileName") val profileName: String,
     @ColumnInfo(name="profileType") val profileType: String,
-    @ColumnInfo(name = "lastUpdate") val lastUpdate: Long
+    @ColumnInfo(name = "lastUpdate") val lastUpdate: Long,
+    @ColumnInfo val isCurrentlySelected: Boolean
 )
