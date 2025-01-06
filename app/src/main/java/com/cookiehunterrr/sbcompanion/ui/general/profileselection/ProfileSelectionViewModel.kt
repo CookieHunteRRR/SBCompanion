@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bumptech.glide.Glide
+import com.cookiehunterrr.sbcompanion.MainActivity
 import com.cookiehunterrr.sbcompanion.ProgramManager
 import com.cookiehunterrr.sbcompanion.R
 import com.cookiehunterrr.sbcompanion.database.entities.ProfileInfo
@@ -86,6 +87,7 @@ class ProfileSelectionViewModel : ViewModel() {
             manager.setCurrentUserData(currentlySelectedUserUUID, selectedProfile.profileUUID)
             Toast.makeText(manager.appContext,
                 "Selected ${selectedProfile.profileName} profile", Toast.LENGTH_SHORT).show()
+            (manager.appContext as MainActivity).moveToProfile()
         }
     }
 

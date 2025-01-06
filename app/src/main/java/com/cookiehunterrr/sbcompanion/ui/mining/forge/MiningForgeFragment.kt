@@ -30,6 +30,11 @@ class MiningForgeFragment : Fragment() {
         val root: View = binding.root
 
         val mainActivity = this.requireContext() as MainActivity
+        if (!mainActivity.programManager.isCurrentUserSet()) {
+            mainActivity.moveToProfileSelection()
+            return root
+        }
+
         val forgeAdapter = ForgeAdapter(mainActivity.programManager, mainActivity)
         val recyclerView: RecyclerView = binding.recyclerViewForgeSlots
         recyclerView.adapter = forgeAdapter
