@@ -16,7 +16,23 @@ class ForgeManager {
         "PERFECT_ONYX_GEM" to 72000L,
         "PERFECT_CITRINE_GEM" to 72000L,
         "PERFECT_AQUAMARINE_GEM" to 72000L,
-        "PERFECT_PERIDOT_GEM" to 72000L
+        "PERFECT_PERIDOT_GEM" to 72000L,
+        "REFINED_DIAMOND" to 28800L,
+        "REFINED_MITHRIL" to 21600L,
+        "REFINED_TITANIUM" to 43200L,
+        "REFINED_UMBER" to 3600L,
+        "REFINED_TUNGSTEN" to 3600L,
+        "BEJEWELED_HANDLE" to 30L,
+        "DRILL_ENGINE" to 108000L,
+        "FUEL_TANK" to 36000L,
+        "GEMSTONE_MIXTURE" to 14400L,
+        "GLACITE_AMALGAMATION" to 14400L,
+        "GOLDEN_PLATE" to 21600L,
+        "MITHRIL_PLATE" to 64800L,
+        "TUNGSTEN_PLATE" to 10800L,
+        "UMBER_PLATE" to 10800L,
+        "PERFECT_PLATE" to 1800L,
+        "SKELETON_KEY" to 1800L
     )
 
     fun getRemainingForgeTimeAsString(itemId: String, startTime: Long) : String {
