@@ -85,7 +85,7 @@ class ProgramManager(context: Context, database: Database) {
         val currentForgeSlots = db.forgeSlotDao().getProfileForgeSlots(currentProfileUUID)
         val currentUserData = db.profileInfoDao().getPlayerProfileByUUID(currentUserUUID, currentProfileUUID)
 
-        if (forgeManager.isForgeSlotsRequireUpdate(currentForgeSlots, currentUserData!!)) {
+        if (forgeManager.isProfileRequiresUpdate(currentUserData!!)) {
             fetchUserSkyblockProfiles()
             // TODO: оно не вернет актуальные данные...
             return db.forgeSlotDao().getProfileForgeSlots(currentProfileUUID)

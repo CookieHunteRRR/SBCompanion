@@ -1,6 +1,5 @@
 package com.cookiehunterrr.sbcompanion.managers
 
-import com.cookiehunterrr.sbcompanion.database.entities.ForgeSlot
 import com.cookiehunterrr.sbcompanion.database.entities.ProfileInfo
 
 class ForgeManager {
@@ -46,17 +45,11 @@ class ForgeManager {
         return convertToBeautifulTimeString(timeLeft)
     }
 
-    fun isForgeSlotsRequireUpdate(forgeSlots: List<ForgeSlot>, profileInfo: ProfileInfo) : Boolean {
+    fun isProfileRequiresUpdate(profileInfo: ProfileInfo) : Boolean {
         val currentTime = java.util.Date().time
         val lastProfileUpdate = profileInfo.lastUpdate
         if (currentTime - lastProfileUpdate > 300 * 1000) {
             return true
-        }
-        for (slotIndex in forgeSlots.indices) {
-            val forgeSlot = forgeSlots.get(slotIndex)
-            if (getRemainingForgeTime(forgeSlot.itemID, forgeSlot.startTime) < 1) {
-                return true
-            }
         }
         return false
     }
